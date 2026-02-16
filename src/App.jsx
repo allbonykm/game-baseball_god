@@ -1,7 +1,24 @@
-import React from 'react';
+import React, { useState } from 'react';
 import GameBoard from './components/GameBoard';
+import StartScreen from './components/StartScreen';
 
 function App() {
+  const [gameStarted, setGameStarted] = useState(false);
+  const [digitCount, setDigitCount] = useState(() => {
+    const saved = localStorage.getItem('baseball_digit_mode');
+    return saved ? parseInt(saved, 10) : 3;
+  });
+
+  const handleStart = (mode) => {
+    setDigitCount(mode);
+    localStorage.setItem('baseball_digit_mode', mode.toString());
+    setGameStarted(true);
+  };
+
+  const handleBackToStart = () => {
+    setGameStarted(false);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-600 via-blue-500 to-indigo-800 text-white selection:bg-yellow-400 selection:text-slate-900">
       {/* Decorative elements */}
@@ -12,7 +29,13 @@ function App() {
       </div>
 
       <main className="relative z-10 py-6 sm:py-12">
-        <GameBoard />
+        <div className={`transition-all duration-500 ${gameStarted ? 'animate-fadeIn' : ''}`}>
+          {gameStarted ? (
+            <GameBoard digitCount={digitCount} onBackToStart={handleBackToStart} />
+          ) : (
+            <StartScreen onStart={handleStart} defaultMode={digitCount} />
+          )}
+        </div>
       </main>
 
       <footer className="relative z-10 text-center py-8 text-white/60 text-sm font-medium">

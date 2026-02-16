@@ -1,6 +1,6 @@
 import React from 'react';
 
-const NumberPad = ({ onNumberClick, onDelete, onEnter, currentGuess }) => {
+const NumberPad = ({ onNumberClick, onDelete, onEnter, currentGuess, digitCount = 3 }) => {
     const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
 
     return (
@@ -13,7 +13,7 @@ const NumberPad = ({ onNumberClick, onDelete, onEnter, currentGuess }) => {
                             if (window.navigator.vibrate) window.navigator.vibrate(10);
                             onNumberClick(num);
                         }}
-                        disabled={currentGuess.length >= 3 || currentGuess.includes(num)}
+                        disabled={currentGuess.length >= digitCount || currentGuess.includes(num)}
                         className="h-14 sm:h-16 flex items-center justify-center bg-white hover:bg-blue-50 disabled:bg-slate-100 disabled:text-slate-300 text-2xl font-black text-slate-700 rounded-2xl shadow-sm hover:shadow-md transition-all active:scale-90 active:bg-blue-100 border-b-4 border-slate-200 hover:border-blue-200 disabled:border-slate-100"
                     >
                         {num}
@@ -35,7 +35,7 @@ const NumberPad = ({ onNumberClick, onDelete, onEnter, currentGuess }) => {
                         if (window.navigator.vibrate) window.navigator.vibrate([20, 10, 20]);
                         onEnter();
                     }}
-                    disabled={currentGuess.length < 3}
+                    disabled={currentGuess.length < digitCount}
                     className="py-4 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 text-white font-black rounded-2xl transition-all shadow-lg active:scale-95 border-b-4 border-blue-800 disabled:border-slate-400"
                 >
                     GO! ⚾

@@ -1,11 +1,12 @@
 /**
- * Generates 3 unique random digits from 0-9.
+ * Generates unique random digits from 0-9.
+ * @param {number} length - Number of digits to generate (default: 3)
  * @returns {number[]}
  */
-export const generateTargetNumber = () => {
+export const generateTargetNumber = (length = 3) => {
     const digits = Array.from({ length: 10 }, (_, i) => i);
     const result = [];
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < length; i++) {
         const randomIndex = Math.floor(Math.random() * digits.length);
         result.push(digits.splice(randomIndex, 1)[0]);
     }

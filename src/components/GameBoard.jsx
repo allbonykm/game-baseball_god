@@ -5,7 +5,7 @@ import NumberPad from './NumberPad';
 import ResultModal from './ResultModal';
 import { generateTargetNumber, checkGuess, loadGameRecord, saveGameRecord } from '../utils/gameLogic';
 
-const GameBoard = () => {
+const GameBoard = ({ digitCount = 3, onBackToStart }) => {
     const [targetNumber, setTargetNumber] = useState([]);
     const [currentPlayer, setCurrentPlayer] = useState('Choyul');
     const [currentGuess, setCurrentGuess] = useState([]);
@@ -24,7 +24,7 @@ const GameBoard = () => {
     }, []);
 
     const startNewGame = () => {
-        setTargetNumber(generateTargetNumber());
+        setTargetNumber(generateTargetNumber(digitCount));
         setHistory([]);
         setCurrentGuess([]);
         setWinner(null);
@@ -32,7 +32,7 @@ const GameBoard = () => {
     };
 
     const handleNumberClick = (num) => {
-        if (currentGuess.length < 3 && !currentGuess.includes(num)) {
+        if (currentGuess.length < digitCount && !currentGuess.includes(num)) {
             setCurrentGuess([...currentGuess, num]);
         }
     };
@@ -42,7 +42,7 @@ const GameBoard = () => {
     };
 
     const handleEnter = () => {
-        if (currentGuess.length !== 3) return;
+        if (currentGuess.length !== digitCount) return;
 
         const result = checkGuess(targetNumber, currentGuess);
         const newEntry = {
@@ -56,7 +56,7 @@ const GameBoard = () => {
         setHistory([newEntry, ...history]);
         setCurrentGuess([]);
 
-        if (result.strike === 3) {
+        if (result.strike === digitCount) {
             setWinner(currentPlayer);
             const newScore = { ...score, [currentPlayer]: score[currentPlayer] + 1 };
             setScore(newScore);
@@ -64,7 +64,15 @@ const GameBoard = () => {
             setGodStatus("말도 안 돼! 내가 지다니...");
         } else {
             // Update God message based on performance
-            setGodStatus("오호, 좀 비껴갔는걸?");
+            if (result.strike >= 2) {
+                setGodStatus("으윽... 위험한데?! 😨");
+            } else if (result.ball >= 2) {
+                setGodStatus("오호, 감은 좋은걸? 🤔");
+            } else if (result.out) {
+                setGodStatus("하하하! 완전 빗나갔어! 😆");
+            } else {
+                setGodStatus("오호, 좀 비껴갔는걸?");
+            }
 
             // Switch player
             setCurrentPlayer(currentPlayer === 'Choyul' ? 'Taeyun' : 'Choyul');
@@ -72,9 +80,22 @@ const GameBoard = () => {
     };
 
     return (
-        <div className="max-w-6xl mx-auto p-4 sm:p-8 space-y-8 pb-12">
+        <div className="max-w-6xl mx-auto p-4 sm:p-8 space-y-8 pb-12 animate-fadeIn">
             {/* Header / God Section */}
             <div className="text-center space-y-2 sm:space-y-4">
+                <div className="flex items-center justify-between">
+                    <button
+                        onClick={onBackToStart}
+                        className="flex items-center gap-1 px-3 py-1.5 sm:px-4 sm:py-2 bg-white/15 hover:bg-white/25 text-white text-xs sm:text-sm font-bold rounded-xl backdrop-blur-sm border border-white/20 transition-all active:scale-95"
+                    >
+                        ← 모드 변경
+                    </button>
+                    <div className="bg-white/15 px-3 py-1 sm:px-4 sm:py-1.5 rounded-full border border-white/20 backdrop-blur-sm">
+                        <span className="text-white text-xs sm:text-sm font-bold">
+                            {digitCount === 3 ? '⚾ 보통' : '🔥 도전'} 모드
+                        </span>
+                    </div>
+                </div>
                 <h1 className="text-3xl sm:text-5xl font-black text-white drop-shadow-lg tracking-tight">
                     야구의 <span className="text-yellow-400 font-baseball">신</span>
                 </h1>
@@ -119,7 +140,7 @@ const GameBoard = () => {
                     <div className="bg-slate-800 p-4 sm:p-8 rounded-[2rem] sm:rounded-3xl border-4 border-slate-700 shadow-2xl relative overflow-hidden">
                         <div className="absolute top-0 left-0 w-full h-1 bg-blue-500 animate-pulse opacity-50"></div>
                         <div className="flex justify-center gap-2 sm:gap-4 mb-4 sm:mb-6">
-                            {[0, 1, 2].map((i) => (
+                            {Array.from({ length: digitCount }, (_, i) => (
                                 <div
                                     key={i}
                                     className={`w-12 h-16 sm:w-16 sm:h-20 rounded-xl sm:rounded-2xl flex items-center justify-center text-2xl sm:text-4xl font-black transition-all duration-200 ${currentGuess[i] !== undefined
@@ -136,6 +157,7 @@ const GameBoard = () => {
                             onDelete={handleDelete}
                             onEnter={handleEnter}
                             currentGuess={currentGuess}
+                            digitCount={digitCount}
                         />
                     </div>
                 </div>
@@ -146,7 +168,7 @@ const GameBoard = () => {
                 </div>
             </div>
 
-            <ResultModal winner={winner} onRestart={startNewGame} />
+            <ResultModal winner={winner} onRestart={startNewGame} onBackToStart={onBackToStart} />
         </div>
     );
 };

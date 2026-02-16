@@ -1,6 +1,6 @@
 import React from 'react';
 
-const ResultModal = ({ winner, onRestart }) => {
+const ResultModal = ({ winner, onRestart, onBackToStart }) => {
     if (!winner) return null;
 
     return (
@@ -17,12 +17,22 @@ const ResultModal = ({ winner, onRestart }) => {
                     <p className="text-2xl font-bold text-slate-800">Next game 선공: {winner}</p>
                 </div>
 
-                <button
-                    onClick={onRestart}
-                    className="w-full py-4 px-8 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xl rounded-2xl shadow-lg hover:shadow-xl transition-all active:scale-95"
-                >
-                    Play Again ⚾
-                </button>
+                <div className="space-y-3">
+                    <button
+                        onClick={onRestart}
+                        className="w-full py-4 px-8 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xl rounded-2xl shadow-lg hover:shadow-xl transition-all active:scale-95"
+                    >
+                        Play Again ⚾
+                    </button>
+                    {onBackToStart && (
+                        <button
+                            onClick={onBackToStart}
+                            className="w-full py-3 px-8 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-base rounded-2xl transition-all active:scale-95 border border-slate-200"
+                        >
+                            🎮 모드 바꾸기
+                        </button>
+                    )}
+                </div>
             </div>
         </div>
     );
